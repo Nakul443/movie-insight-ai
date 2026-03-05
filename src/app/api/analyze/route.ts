@@ -1,16 +1,19 @@
+// when the "search" button is clicked, the code in this file is executed
+// it receives the IMDb ID from the frontend, fetches movie data from OMDb, sends the plot to Gemini for analysis,
+// and returns the combined result back to the frontend
+
 import { NextResponse } from "next/server";
 import { analyzeMovieSentiment } from "@/lib/gemini";
 
 export async function POST(req: Request) {
   try {
-    // get the IMDb ID from the frontend request body
     const { imdbId } = await req.json();
 
     if (!imdbId) {
       return NextResponse.json({ error: "IMDb ID is required" }, { status: 400 });
     }
 
-    // fetch Movie Data from OMDb API
+    // 1. Fetch from OMDb
     const omdbResponse = await fetch(
       `http://www.omdbapi.com/?i=${imdbId}&plot=full&apikey=${process.env.OMDB_API_KEY}`
     );
@@ -20,28 +23,34 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Movie not found!" }, { status: 404 });
     }
 
-    // AI Analysis (The "Insight" part)
-    // we will send the Plot and Title to Gemini to simulate a sentiment analysis 
-    // of how the movie was "intended" vs "received".
-    const aiInsight = await analyzeMovieSentiment(movieData.Title, [movieData.Plot]);
+    // 2. AI Analysis
+    // We await this directly. If it fails, our new gemini.ts catch block 
+    // will return a string instead of throwing a global error.
+    const aiInsight = await analyzeMovieSentiment(
+      movieData.Title, 
+      [movieData.Plot && movieData.Plot !== "N/A" ? movieData.Plot : "No plot available for analysis."]
+    );
 
-    // clean up the data to match our TypeScript interface
+    // 3. Format Data
+    // We ensure the array for 'cast' is handled properly even if OMDb returns "N/A"
     const formattedData = {
-      title: movieData.Title,
-      year: movieData.Year,
-      poster: movieData.Poster,
-      rating: movieData.imdbRating,
-      plot: movieData.Plot,
-      cast: movieData.Actors.split(", "), // OMDb gives a string, we want an array
-      director: movieData.Director,
-      genre: movieData.Genre,
-      aiSummary: aiInsight
+      title: movieData.Title || "Unknown",
+      year: movieData.Year || "N/A",
+      poster: movieData.Poster || "",
+      rating: movieData.imdbRating || "N/A",
+      plot: movieData.Plot || "No plot available.",
+      cast: movieData.Actors && movieData.Actors !== "N/A" 
+        ? movieData.Actors.split(", ") 
+        : ["Cast info unavailable"],
+      director: movieData.Director || "N/A",
+      genre: movieData.Genre || "N/A",
+      aiSummary: aiInsight // This now contains the result from Gemini
     };
 
     return NextResponse.json(formattedData);
 
   } catch (error) {
-    console.error("API Error:", error);
+    console.error("API Global Error:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
