@@ -2,6 +2,7 @@
 VERCEL LINK (add after first deploy):
 - https://<your-project>.vercel.app
 -->
+# Vercel Link: https://movie-insight-ai.vercel.app/
 
 ## Movie Insight AI
 
