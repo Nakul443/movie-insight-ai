@@ -1,13 +1,11 @@
-// displays the movie information in a card format with a poster, title, rating, year, genre, plot, and cast
-
 "use client";
-import { Star, Calendar, Clapperboard, Users } from "lucide-react";
+import { Star, Calendar, Clapperboard, Users, Sparkles } from "lucide-react";
 
 export default function MovieCard({ movie }: { movie: any }) {
   return (
     <div className="w-full max-w-5xl mx-auto mt-12 bg-[#111] rounded-[2rem] overflow-hidden border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex flex-col md:flex-row transition-all hover:border-blue-500/30">
       
-      {/* Poster Fix: Using object-contain to prevent enlargement/cropping */}
+      {/* Poster Section */}
       <div className="md:w-[350px] shrink-0 bg-black flex items-center justify-center p-4">
         <img 
           src={movie.poster !== "N/A" ? movie.poster : "/placeholder.png"} 
@@ -37,10 +35,23 @@ export default function MovieCard({ movie }: { movie: any }) {
             </div>
           </div>
 
+          {/* AI INSIGHT SECTION - ADDED THIS */}
+          <div className="bg-blue-600/10 border border-blue-500/20 p-6 rounded-2xl relative overflow-hidden group">
+            <div className="flex items-center gap-2 mb-2 text-blue-400">
+              <Sparkles size={18} />
+              <span className="text-[10px] font-black uppercase tracking-[0.3em]">AI Perspective</span>
+            </div>
+            <p className="text-white text-lg leading-relaxed relative z-10">
+              {movie.aiSummary || "AI is thinking..."}
+            </p>
+            {/* Decorative background glow */}
+            <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-blue-500/10 blur-3xl rounded-full group-hover:bg-blue-500/20 transition-all" />
+          </div>
+
           {/* Plot Box */}
           <div className="relative">
-            <div className="absolute left-0 top-0 w-1 h-full bg-blue-600 rounded-full" />
-            <p className="text-gray-300 text-lg md:text-xl leading-relaxed font-light pl-6 py-1 italic">
+            <div className="absolute left-0 top-0 w-1 h-full bg-gray-700 rounded-full" />
+            <p className="text-gray-400 text-base md:text-lg leading-relaxed font-light pl-6 py-1">
               {movie.plot}
             </p>
           </div>
@@ -50,12 +61,12 @@ export default function MovieCard({ movie }: { movie: any }) {
         <div className="mt-10 pt-8 border-t border-white/5">
           <div className="flex items-center gap-2 mb-4">
             <Users size={18} className="text-blue-500" />
-            <h3 className="text-gray-500 text-xs font-black uppercase tracking-[0.2em]">The Cast</h3>
+            <h3 className="text-gray-500 text-[10px] font-black uppercase tracking-[0.2em]">The Cast</h3>
           </div>
           <div className="flex flex-wrap gap-2">
             {movie.cast && movie.cast.length > 0 ? (
               movie.cast.map((actor: string) => (
-                <span key={actor} className="text-sm bg-white/5 hover:bg-white/10 border border-white/10 px-4 py-1.5 rounded-lg text-white transition-colors cursor-default">
+                <span key={actor} className="text-xs bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-1 rounded-lg text-white transition-colors cursor-default">
                   {actor}
                 </span>
               ))
