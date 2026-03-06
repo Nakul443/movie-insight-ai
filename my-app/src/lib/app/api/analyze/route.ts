@@ -3,7 +3,7 @@
 // and returns the combined result back to the frontend
 
 import { NextResponse } from "next/server";
-import { analyzeMovieSentiment } from "@/lib/gemini";
+import { analyzeMovieSentiment } from "../../../../lib/gemini";
 
 export async function POST(req: Request) {
   try {
