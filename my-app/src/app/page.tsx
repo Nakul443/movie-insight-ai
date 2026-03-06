@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
-import SearchInput from "../src/components/SearchInput";
-import MovieCard from "../src/components/MovieCard";
+import SearchInput from "../components/SearchInput";
+import MovieCard from "../components/MovieCard";
 
 export default function Home() {
   const [movieData, setMovieData] = useState<any>(null);
